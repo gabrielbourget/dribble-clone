@@ -1,6 +1,7 @@
 import { NavLinks } from "@/constants"
 import Image from "next/image"
 import Link from "next/link"
+import { signOut } from "next-auth/react";
 import AuthProviders from "./AuthProviders";
 import { getCurrentUser } from "@/lib/session";
 
@@ -49,6 +50,8 @@ const Navbar = async () => {
               <Link href="/create-project">
                 Share Work
               </Link>
+              
+              <button type="button" className="text-sm" onClick={signOut}>Sign Out</button>
             </>
           ) : <AuthProviders />
         }

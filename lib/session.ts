@@ -25,17 +25,16 @@ export const authOptions: NextAuthOptions = {
   ],
   jwt: {
     encode: ({ secret, token }) => {
-      // const encodedToken = jsonwebtoken.sign(
-      //   {
-      //     ...token,
-      //     iss: "grafbase",
-      //     exp: Math.floor(Date.now() / 1000) + 60 * 60,
-      //   },
-      //   secret
-      // );
+      const encodedToken = jsonwebtoken.sign(
+        {
+          ...token,
+          iss: "grafbase",
+          exp: Math.floor(Date.now() / 1000) + 60 * 60,
+        },
+        secret
+      );
       
-      // return encodedToken;
-      return "";
+      return encodedToken;
     },
     decode: async ({ secret, token }) => {
       const decodedToken = jsonwebtoken.verify(token!, secret);
