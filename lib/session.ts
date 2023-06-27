@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async session({ session }) {
-      console.log(`session from next-auth session callback -> ${session}`);
+      // console.log(`session from next-auth session callback -> ${session}`);
 
       const email = session?.user?.email as string;
 
@@ -64,16 +64,16 @@ export const authOptions: NextAuthOptions = {
 
         return newSession;
       } catch(err) {
-        console.error(`Error in next-auth session callback -> ${err}`);
+        // console.error(`Error in next-auth session callback -> ${err}`);
         return session;
       }
     },
     async signIn({ user }: { user: AdapterUser | User }) {
-      console.log(`user in next auth signIn callback -> ${JSON.stringify(user, null, 3)}`);
+      // console.log(`user in next auth signIn callback -> ${JSON.stringify(user, null, 3)}`);
       try {
         const userQueryRes = await getUser(user?.email as string) as { user?: UserProfile };
         
-        console.log(`user query request -> ${JSON.stringify(userQueryRes, null, 3)}`);
+        // console.log(`user query request -> ${JSON.stringify(userQueryRes, null, 3)}`);
 
         if (!userQueryRes.user) {
           await createuser(user.name as string, user.email as string, user.image as string);
