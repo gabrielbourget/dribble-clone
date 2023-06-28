@@ -21,7 +21,22 @@ const ProjectForm = ({ type, session }: ProjectFormProps) => {
   // };
 
   const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
 
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.includes("image")) {
+      return alert("Please upload an image");
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      handleStateChange("image", result);
+    }
   };
 
   const handleStateChange = (fieldName: string, value: string) => {
