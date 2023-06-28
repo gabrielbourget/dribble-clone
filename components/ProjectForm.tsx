@@ -1,130 +1,164 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Image from "next/image";
-import { SessionInterface } from "@/common.types";
-import { categoryFilters } from "@/constants";
-import FormField from "./FormField";
-import CustomMenu from "./CustomMenu";
+import Image from 'next/image';
+import React, { ChangeEvent, FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation';
 
-type ProjectFormProps = {
-  type: string;
-  session: SessionInterface;
+import FormField from './FormField';
+// import Button from './Button';
+import CustomMenu from './CustomMenu';
+import { categoryFilters } from '@/constants';
+// import { updateProject, createNewProject, fetchToken } from '@/lib/actions';
+import { FormState, ProjectInterface, SessionInterface } from '@/common.types';
+
+type Props = {
+    type: string,
+    session: SessionInterface,
+    project?: ProjectInterface
 }
 
-const ProjectForm = ({ type, session }: ProjectFormProps) => {
-  const handleFormSubmit = (e: any) => {
+const ProjectForm = ({ type, session, project }: Props) => {
+    const router = useRouter()
 
-  };
-  // const handleFormSubmit = (e: React.FormEvent<HTMLInputElement>) => {
+    const [submitting, setSubmitting] = useState<boolean>(false);
+    const [form, setForm] = useState<FormState>({
+        title: project?.title || "",
+        description: project?.description || "",
+        image: project?.image || "",
+        liveSiteUrl: project?.liveSiteUrl || "",
+        githubUrl: project?.githubUrl || "",
+        category: project?.category || ""
+    })
 
-  // };
+    const handleStateChange = (fieldName: keyof FormState, value: string) => {
+        setForm((prevForm) => ({ ...prevForm, [fieldName]: value }));
+    };
 
-  const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
+    const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
 
-    const file = e.target.files?.[0];
+        const file = e.target.files?.[0];
 
-    if (!file) return;
+        if (!file) return;
 
-    if (!file.type.includes("image")) {
-      return alert("Please upload an image");
-    }
+        if (!file.type.includes('image')) {
+            alert('Please upload an image!');
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const result = reader.result as string;
-      handleStateChange("image", result);
-    }
-  };
-
-  const handleStateChange = (fieldName: string, value: string) => {
-    setForm((prevState) => ({ ...prevState, value }));
-  }
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [form, setForm] = useState({
-    title: "",
-    image: "",
-    description: "",
-    liveSiteUrl: "",
-    githubUrl: "",
-    category: "",
-  })
-
-  return (
-    <form action="" className="flexStart form" onSubmit={handleFormSubmit}>
-      <div className="flexStart form_image-container w-full lg:min-h-[400px] min-h-[200px] relative">
-        <label htmlFor="poster" className="flexCenter form_iamge-label">
-          {
-            (form.image) ? (
-              "Image"
-            ) : (<p>Add a project photo</p>)
-          }
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          required={type === "create"}
-          className="form_image-input"
-          onChange={handleChangeImage}
-        />
-        {
-          (form.image) ? (
-            <>
-              <Image
-                src={form?.image}
-                className="sm:p-10 object-contain z-20"
-                alt="Project poster"
-                fill
-              />
-            </>
-          ) : undefined
+            return;
         }
-      </div>
 
-      <FormField
-        title="Title"
-        state={form.title}
-        placeholder="Flexibble"
-        setState={(value: string) => handleStateChange("title", value)}
-      />
-      <FormField
-        title="Description"
-        state={form.description}
-        isTextArea
-        placeholder="Showcase and discover remarkable developer projects."
-        setState={(value: string) => handleStateChange("description", value)}
-      />
-      <FormField
-        type="url"
-        title="Website URL"
-        state={form.liveSiteUrl}
-        placeholder="Site URL"
-        setState={(value: string) => handleStateChange("liveSiteURL", value)}
-      />
-      <FormField
-        type="url"
-        title="Github URL"
-        state={form.githubUrl}
-        placeholder="Github URL"
-        setState={(value: string) => handleStateChange("title", value)}
-      />
+        const reader = new FileReader();
 
-      <CustomMenu
-        title="Category"
-        state={form.category}
-        filters={categoryFilters}
-        setState={(value: string) => handleStateChange("category", value)}
-      />
-      
-      <div className="flexStart w-full">
-        <button>Create Project</button>
-      </div>
-    </form>
-  )
+        reader.readAsDataURL(file);
+
+        reader.onload = () => {
+            const result = reader.result as string;
+
+            handleStateChange("image", result)
+        };
+    };
+
+    const handleFormSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+
+        // setSubmitting(true)
+
+        // const { token } = await fetchToken()
+
+        // try {
+        //     if (type === "create") {
+        //         await createNewProject(form, session?.user?.id, token)
+
+        //         router.push("/")
+        //     }
+            
+        //     if (type === "edit") {
+        //         await updateProject(form, project?.id as string, token)
+
+        //         router.push("/")
+        //     }
+
+        // } catch (error) {
+        //     alert(`Failed to ${type === "create" ? "create" : "edit"} a project. Try again!`);
+        // } finally {
+        //     setSubmitting(false)
+        // }
+    }
+
+    return (
+        <form
+            onSubmit={handleFormSubmit}
+            className="flexStart form">
+            <div className="flexStart form_image-container">
+                <label htmlFor="poster" className="flexCenter form_image-label">
+                    {!form.image && 'Choose a poster for your project'}
+                </label>
+                <input
+                    id="image"
+                    type="file"
+                    accept='image/*'
+                    required={type === "create" ? true : false}
+                    className="form_image-input"
+                    onChange={(e) => handleChangeImage(e)}
+                />
+                {form.image && (
+                    <Image
+                        src={form?.image}
+                        className="sm:p-10 object-contain z-20" alt="image"
+                        fill
+                    />
+                )}
+            </div>
+
+            <FormField
+                title="Title"
+                state={form.title}
+                placeholder="Flexibble"
+                setState={(value) => handleStateChange('title', value)}
+            />
+
+            <FormField
+                title='Description'
+                state={form.description}
+                placeholder="Showcase and discover remarkable developer projects."
+                isTextArea
+                setState={(value) => handleStateChange('description', value)}
+            />
+
+            <FormField
+                type="url"
+                title="Website URL"
+                state={form.liveSiteUrl}
+                placeholder="https://jsmastery.pro"
+                setState={(value) => handleStateChange('liveSiteUrl', value)}
+            />
+
+            <FormField
+                type="url"
+                title="GitHub URL"
+                state={form.githubUrl}
+                placeholder="https://github.com/adrianhajdin"
+                setState={(value) => handleStateChange('githubUrl', value)}
+            />
+
+            <CustomMenu
+                title="Category"
+                state={form.category}
+                filters={categoryFilters}
+                setState={(value) => handleStateChange('category', value)}
+            />
+
+            <div className="flexStart w-full">
+                {/* <Button
+                    title={submitting ? `${type === "create" ? "Creating" : "Editing"}` : `${type === "create" ? "Create" : "Edit"}`}
+                    type="submit"
+                    leftIcon={submitting ? "" : "/plus.svg"}
+                    submitting={submitting}
+                /> */}
+                <button type="submit">Create Project</button>
+            </div>
+        </form>
+    )
 }
 
-export default ProjectForm
+export default ProjectForm;
