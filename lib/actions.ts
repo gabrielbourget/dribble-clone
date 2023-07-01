@@ -1,5 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 import { createUserMutation, getUserQuery } from "@/graphql";
+import { ProjectForm } from "@/common.types";
 
 const {
   NEXT_PUBLIC_GRAFBASE_API_URL, NODE_ENV, NEXT_PUBLIC_GRAFBASE_API_KEY, NEXT_PUBLIC_SERVER_URL
@@ -32,3 +33,17 @@ export const createuser = (name: string, email: string, avatarUrl: string) => {
   
   return makeGraphQLRequest(createUserMutation, variables);
 };
+
+export const uploadImage = async (imagePath: string) => {
+  try {
+    const res = await fetch(`${serverUrl}/api/upload`, {
+      
+    });
+  } catch (err) {
+
+  }
+}
+
+export const createNewProject = async (form: ProjectForm, createrId: string, token: string) => {
+  const imageUrl = await uploadImage(form.image);
+}
