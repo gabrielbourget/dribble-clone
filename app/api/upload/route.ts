@@ -27,12 +27,13 @@ export async function POST(request: Request) {
       unique_filename: false,
       overwrite: true,
       transformation: [{ width: 1000, height: 752, crop: "scale" }],
-    }
+    };
 
     const result = await cloudinary.uploader.upload(path, options);
 
     return NextResponse.json(result, { status: 200 });
   } catch (err) {
+    console.error(`error uploading image -> ${JSON.stringify(err, null, 4)}`);
     return NextResponse.json({ message: err }, { status: 500 });
   }
 };

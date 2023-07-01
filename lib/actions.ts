@@ -59,17 +59,19 @@ export const uploadImage = async (imagePath: string) => {
 export const createNewProject = async (form: ProjectForm, creatorId: string, token: string) => {
   const imageUrl = await uploadImage(form.image);
   
-  client.setHeader("Authorization", `Bearer ${token}`);
-
-  const variables = {
-    input: {
-      ...form,
-      image: imageUrl.url,
-      createdBy: { link: creatorId }
-    }
-  };
-
   if (imageUrl.url) {
-    return makeGraphQLRequest(createProjectMutation, variables);
+    client.setHeader("Authorization", `Bearer ${token}`);
+  
+    const variables = {
+      input: {
+        ...form,
+        image: imageUrl.url,
+        createdBy: { link: creatorId }
+      }
+    };
+
+    const result = makeGraphQLRequest(createProjectMutation, variables);
+    console.log(`project upload result -> ${JSON.stringify(result, null, 4)}`);
+    return result;
   }
 }
