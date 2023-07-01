@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import React, { ChangeEvent, FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation';
-
 import FormField from './FormField';
 // import Button from './Button';
 import CustomMenu from './CustomMenu';
@@ -11,6 +10,7 @@ import { categoryFilters } from '@/constants';
 // import { updateProject, createNewProject, fetchToken } from '@/lib/actions';
 import { FormState, ProjectInterface, SessionInterface } from '@/common.types';
 import Button from './Button';
+import { createNewProject, fetchToken } from '@/lib/actions';
 
 type Props = {
     type: string,
@@ -19,7 +19,7 @@ type Props = {
 }
 
 const ProjectForm = ({ type, session, project }: Props) => {
-  const router = useRouter()
+  const router = useRouter();
 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [form, setForm] = useState<FormState>({
@@ -61,11 +61,19 @@ const ProjectForm = ({ type, session, project }: Props) => {
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    setSubmitting(true);
+
+    const { token } = await fetchToken();
+
     if (type === "create") {
       try {
+        await createNewProject(form, session?.user?.id, token);
 
+        router.push("/");
       } catch (err) {
-        
+        console.error(`Error while submitting new project -> ${err}`);
+      } finally {
+        setSubmitting(false);
       }
     }
   }

@@ -47,7 +47,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async session({ session }) {
-      // console.log(`session from next-auth session callback -> ${session}`);
 
       const email = session?.user?.email as string;
 
@@ -90,6 +89,5 @@ export const authOptions: NextAuthOptions = {
 
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions) as SessionInterface;
-  console.log(`session from getServerSession call -> ${session}`);
   return session;
 };
